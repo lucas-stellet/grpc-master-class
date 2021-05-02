@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"context"
 	"log"
 
 	"github.com/lucas-stellet/grpc-learn/grpc-master-class/greet/greetpb"
@@ -18,5 +18,22 @@ func main() {
 
 	client := greetpb.NewGreetServiceClient(conn)
 
-	fmt.Printf("Created client: %#v", client)
+	doUnary(client)
+}
+
+func doUnary(client greetpb.GreetServiceClient) {
+	req := &greetpb.GreetRequest{
+		Greeting: &greetpb.Greeting{
+			FirstName: "Lucas",
+			LastName:  "Stellet",
+		},
+	}
+
+	res, err := client.Greet(context.Background(), req)
+
+	if err != nil {
+		log.Printf("Request to gRPC fails : %v", err)
+	}
+
+	log.Printf("Response from Greet: %v", res.Result)
 }
