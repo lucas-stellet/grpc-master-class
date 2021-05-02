@@ -18,5 +18,5 @@ func main() {
 
 	client := greetpb.NewGreetServiceClient(conn)
 
-	fmt.Printf("Created client: %f", client)
+	fmt.Printf("Created client: %#v", client)
 }
