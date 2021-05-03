@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
+	"time"
 
 	"github.com/lucas-stellet/grpc-learn/grpc-master-class/greet/greetpb"
 	"google.golang.org/grpc"
@@ -35,7 +37,7 @@ func main() {
 type server struct{}
 
 func (s *server) Greet(ctx context.Context, in *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
-	fmt.Printf("greet function was invoked with %v\n", in)
+	fmt.Printf("Greet function was invoked with %v\n", in)
 	firstName := in.GetGreeting().GetFirstName()
 	lastName := in.GetGreeting().GetLastName()
 
@@ -46,4 +48,20 @@ func (s *server) Greet(ctx context.Context, in *greetpb.GreetRequest) (*greetpb.
 	}
 
 	return res, nil
+}
+
+func (s *server) GreetManyTimes(in *greetpb.GreetManyTimesRequest, stream greetpb.GreetService_GreetManyTimesServer) error {
+	fmt.Printf("GreetManyTimes function was invoked with %v\n", in)
+	firstName := in.GetGreeting().GetFirstName()
+
+	for i := 0; i < 10; i++ {
+		result := fmt.Sprintf("Hello %s number %s", firstName, strconv.Itoa(i))
+
+		res := &greetpb.GreetManyTimesResponse{
+			Result: result,
+		}
+		stream.Send(res)
+		time.Sleep(1000 * time.Millisecond)
+	}
+	return nil
 }
